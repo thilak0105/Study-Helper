@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submitted Answers</title>
+</head>
+<body>
+    <h1>Submitted Answers</h1>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <ul>
+        {% for question, answer in qa_pairs %}
+            <li><strong>{{ question }}</strong>: {{ answer }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

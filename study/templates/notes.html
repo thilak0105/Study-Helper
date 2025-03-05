@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes</title>
+    <link rel="stylesheet" href="{% static 'css/notes.css' %}">
+</head>
+<body>
+    <!-- Accessibility Controls -->
+    <div class="accessibility-controls">
+        <button class="accessibility-btn" id="contrast-toggle">Toggle Contrast</button>
+        <button class="accessibility-btn" id="text-size-small">A-</button>
+        <button class="accessibility-btn" id="text-size-large">A+</button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <h1>Notes</h1>
+
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <h2>Bullet Points</h2>
+            <ul class="bullet-points" id="content">
+                {% for point in points %}
+                    <li>{{ point }}</li>
+                {% endfor %}
+            </ul>
+
+            <div class="button-group">
+                <button class="button" onclick="startReadAloud()">Start Read Aloud</button>
+                <button class="button" onclick="stopReadAloud()">Stop Read Aloud</button>
+            </div>
+        </div>
+
+        <!-- Navigation Button -->
+        <a href="{% url 'questions_form' %}" class="button">Evaluate Myself</a>
+
+        <!-- Countdown Timer -->
+        <div class="countdown-timer">
+            <h2>Time Remaining: <span id="timer">02:00</span></h2>
+            <p id="xp-message" style="display: none;">+2 XP</p>
+        </div>
+
+        <!-- Translation Button -->
+        <button class="button" onclick="translateContent()">Translate</button>
+        <button class="button" onclick="resetTranslation()">Back to English</button>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // CSRF Token
+        const csrfToken = "{{ csrf_token }}";
+
+        // Start Read Aloud
+        function startReadAloud() {
+            fetch("{% url 'start_text_to_speech' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({ summary: "{{ points|join:' ' }}" })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Stop Read Aloud
+        function stopReadAloud() {
+            fetch("{% url 'stop_text_to_speech' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Accessibility Controls
+        const textSizeSmallBtn = document.getElementById("text-size-small");
+        const textSizeLargeBtn = document.getElementById("text-size-large");
+        const contrastToggleBtn = document.getElementById("contrast-toggle");
+
+        // Adjust Text Size
+        const adjustTextSize = (increase) => {
+            const container = document.querySelector(".container");
+            const currentSize = parseFloat(window.getComputedStyle(container).fontSize);
+            const newSize = increase ? currentSize + 2 : Math.max(currentSize - 2, 12); // Min size: 12px
+            container.style.fontSize = `${newSize}px`;
+        };
+
+        textSizeSmallBtn.addEventListener("click", () => adjustTextSize(false));
+        textSizeLargeBtn.addEventListener("click", () => adjustTextSize(true));
+
+        // Toggle Contrast Mode
+        contrastToggleBtn.addEventListener("click", () => {
+            document.body.classList.toggle("high-contrast");
+        });
+
+        // Countdown Timer
+        let timerElement = document.getElementById("timer");
+        let xpMessage = document.getElementById("xp-message");
+        let time = 120; // 2 minutes in seconds
+
+        function startTimer() {
+            let countdown = setInterval(() => {
+                if (time >= 0) {
+                    let minutes = Math.floor(time / 60);
+                    let seconds = time % 60;
+                    seconds = seconds < 10 ? '0' + seconds : seconds;
+                    timerElement.textContent = `${minutes}:${seconds}`;
+                    time--;
+                } else {
+                    clearInterval(countdown);
+                    xpMessage.style.display = "block";
+                    setTimeout(() => {
+                        xpMessage.style.display = "none";
+                        time = 120; // Reset time
+                        startTimer(); // Restart timer
+                    }, 2000); // Show "+2 XP" for 2 seconds
+                }
+            }, 1000);
+        }
+
+        startTimer();
+
+        // Translation
+        let originalContent = document.getElementById('content').innerHTML;
+
+        function translateContent() {
+            const content = document.getElementById('content').innerText;
+            fetch(`https://translation.googleapis.com/language/translate/v2?key=YOUR_API_KEY`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    q: content,
+                    target: 'es' // Change to desired language code
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('content').innerHTML = data.data.translations[0].translatedText;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function resetTranslation() {
+            document.getElementById('content').innerHTML = originalContent;
+        }
+    </script>
+</body>
+</html>

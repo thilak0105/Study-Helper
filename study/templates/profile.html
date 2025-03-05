@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="{% static 'profile1.css' %}">
+</head>
+<body>
+    <div class="back-button">
+        <button onclick="goBack()">Back</button>
+    </div>
+    
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <h1>User Profile</h1>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="profile-details">
+            <h2>Profile Details</h2>
+            <p><strong>Username:</strong> <span>{{ user.username }}</span></p>
+            <p><strong>Email:</strong> <span>{{ user.email }}</span></p>
+            <p><strong>First Name:</strong> <span>{{ user.first_name }}</span></p>
+            <p><strong>Last Name:</strong> <span>{{ user.last_name }}</span></p>
+        </div>
+
+        <!-- Streaks Section -->
+        <div class="streaks">
+            <h2>Streaks</h2>
+            <p><strong>Current Streak:</strong> <span>2 days</span></p>
+            <p><strong>Longest Streak:</strong> <span>2 days</span></p>
+        </div>
+
+        <!-- Study Materials Section -->
+        <div class="study-materials">
+            <h2>Study Materials</h2>
+            <ul>
+                {% for material in study_materials %}
+                    <li>
+                        <h3>{{ material.title }}</h3>
+                        <p>{{ material.description }}</p>
+                        <a href="{% url 'process_study_material' material.id %}">View Summary</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary</title>
+    <link rel="stylesheet" href="{% static 'css/summary.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Summary of Study Material</h1>
+        
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <h2>Paragraphs</h2>
+            <p id="summary-text">{{ paragraphs }}</p>
+        </div>
+        
+        <!-- Button Controls -->
+        <div class="button-group">
+            <button class="button button-read-aloud" onclick="startReadAloud()">Start Read Aloud</button>
+            <button class="button button-read-aloud" onclick="stopReadAloud()">Stop Read Aloud</button>
+            <a href="{% url 'generate_notes' study_material.id %}" class="button">Generate Notes</a>
+            <button class="button" onclick="adjustTextSize(true)">Enlarge</button>
+            <button class="button" onclick="adjustTextSize(false)">Shrink</button>
+            <button class="button" onclick="toggleContrast()">Toggle Contrast</button>
+        </div>
+
+        <!-- Countdown Timer -->
+        <div class="countdown-timer">
+            <h2>Time Remaining: <span id="timer">02:00</span></h2>
+            <p id="xp-message" style="display: none;">+2 XP</p>
+        </div>
+
+        <!-- Translation Button -->
+        <button class="button" onclick="translateContent()">Translate</button>
+        <button class="button" onclick="resetTranslation()">Back to English</button>
+    </div>
+
+    <script>
+        // CSRF Token
+        const csrfToken = "{{ csrf_token }}";
+
+        // Start Text-to-Speech
+        function startReadAloud() {
+            fetch("{% url 'start_text_to_speech' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                },
+                body: JSON.stringify({ summary: "{{ paragraphs|escapejs }}" })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Stop Text-to-Speech
+        function stopReadAloud() {
+            fetch("{% url 'stop_text_to_speech' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        // Adjust Text Size
+        function adjustTextSize(increase) {
+            const summaryText = document.getElementById('summary-text');
+            const currentSize = parseFloat(window.getComputedStyle(summaryText).fontSize);
+            const newSize = increase ? currentSize + 2 : Math.max(currentSize - 2, 12); // Min size: 12px
+            summaryText.style.fontSize = `${newSize}px`;
+        }
+
+        // Toggle High Contrast Mode
+        function toggleContrast() {
+            document.body.classList.toggle('high-contrast');
+        }
+
+        // Countdown Timer
+        const timerElement = document.getElementById("timer");
+        const xpMessage = document.getElementById("xp-message");
+        let time = 120; // 2 minutes in seconds
+
+        function startTimer() {
+            const countdown = setInterval(() => {
+                if (time >= 0) {
+                    const minutes = Math.floor(time / 60);
+                    const seconds = time % 60;
+                    timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                    time--;
+                } else {
+                    clearInterval(countdown);
+                    xpMessage.style.display = "block";
+                    setTimeout(() => {
+                        xpMessage.style.display = "none";
+                        time = 120; // Reset time
+                        startTimer(); // Restart timer
+                    }, 2000); // Show "+2 XP" for 2 seconds
+                }
+            }, 1000);
+        }
+
+        // Start Timer on Load
+        startTimer();
+
+        // Translation
+        let originalContent = document.getElementById('summary-text').innerHTML;
+
+        function translateContent() {
+            const content = document.getElementById('summary-text').innerText;
+            fetch(`https://translation.googleapis.com/language/translate/v2?key=YOUR_API_KEY`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    q: content,
+                    target: 'es' // Change to desired language code
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('summary-text').innerHTML = data.data.translations[0].translatedText;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function resetTranslation() {
+            document.getElementById('summary-text').innerHTML = originalContent;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f5f5;
+            --text-color: #333;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px 0;
+        }
+
+        .user-info-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .user-info-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        input[type="file"] {
+            border: 2px dashed #ccc;
+            padding: 40px;
+            border-radius: 10px;
+            width: calc(100% - 80px);
+            cursor: pointer;
+        }
+
+        input[type="file"]:hover {
+            border-color: var(--primary-color);
+        }
+
+        .upload-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .contrast-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        /* High Contrast Mode */
+        body.high-contrast {
+            background: #000;
+            color: #fff;
+        }
+
+        body.high-contrast .upload-section {
+            background: #333;
+            color: #fff;
+        }
+
+        body.high-contrast input[type="file"] {
+            border-color: #fff;
+            color: #fff;
+        }
+
+        body.high-contrast .user-info-btn,
+        body.high-contrast .upload-btn {
+            background-color: #fff;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="{% url 'profile' %}"><button class="user-info-btn">Profile</button></a>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'upload_study_material' %}">
+                    {% csrf_token %}
+                    <input type="file" name="file" required>
+                    <button type="submit" class="upload-btn">Upload Study Material</button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <button class="contrast-toggle">Toggle Contrast</button>
+
+    <script>
+        document.querySelector('.contrast-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('high-contrast');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to StudyHelper</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="logo">StudyHelper</h1>
+        <p class="tagline">Transform your learning experience with AI-powered study tools</p>
+        
+        <div class="buttons">
+            <a href="{% url 'custom_login' %}" class="button login-btn">Login</a>
+            <a href="{% url 'signup' %}" class="button signup-btn">Sign Up</a>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <h3>Smart Summaries</h3>
+                <p>Get AI-generated summaries of your study materials to grasp key concepts quickly.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Interactive Learning</h3>
+                <p>Engage with your study materials through quizzes and interactive modules.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Progress Tracking</h3>
+                <p>Monitor your learning journey with detailed progress analytics.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

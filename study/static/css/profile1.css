@@ -1,0 +1,72 @@
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f9;
+    color: #333;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #2c3e50;
+}
+
+.profile-details, .streaks, .study-materials {
+    margin-bottom: 20px;
+}
+
+.profile-details p, .streaks p, .study-materials p {
+    margin: 5px 0;
+}
+
+.study-materials ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.study-materials li {
+    background: #f9f9f9;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.study-materials li h3 {
+    margin: 0 0 5px 0;
+}
+
+.study-materials li a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.study-materials li a:hover {
+    text-decoration: underline;
+}
+
+.back-button {
+    margin-bottom: 20px;
+}
+
+.back-button button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-button button:hover {
+    background-color: #2980b9;
+}

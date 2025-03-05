@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lessons - {{ study_material.title }}</title>
+    <link rel="stylesheet" href="{% static 'lessons.css' %}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header with User Info Button -->
+        <header>
+            <a href="{% url 'user_info' %}"><button class="user-info-btn">User Info</button></a>
+        </header>
+
+        <!-- Study Material Title -->
+        <section class="study-material-title">
+            <h1>{{ study_material.title }}</h1>
+            <p>{{ study_material.description }}</p>
+        </section>
+
+        <!-- Modules Section -->
+        <section class="modules-section">
+            <h2>Modules</h2>
+            <div class="modules-container">
+                {% for module in modules %}
+                    <div class="module-card">
+                        <h3>{{ module.title }}</h3>
+                        <p>Pages: {{ module.start_page }} - {{ module.end_page }}</p>
+                        <p>Estimated Time: {{ module.estimated_time }} minutes</p>
+                        <a href="#">Start Module</a> <!-- Link to module content or quiz -->
+                    </div>
+                {% empty %}
+                    <p>No modules available for this study material.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</body>
+</html>
